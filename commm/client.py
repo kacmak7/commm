@@ -9,10 +9,14 @@ class Client:
         
         if hash is None:
             self.hash = self.create_room()
-            logger.warning('Created new room: ' + self.hash)
+            logger.warning('Created ' + self.hash)
         else:
-            self.hash = hash
-
+            try:
+                self.join_room(hash)
+                self.hash = hash
+                logger.warning('Joined ' + self.hash)
+            except:
+                logger.error('Could not join ' + hash)
 
     def __del__(self):
         logger.warning('closing')
@@ -33,15 +37,20 @@ class Client:
     def create_room(self): #TODO needs working add_json/get_json ipfs methods
         return self.ipfs_client.add('test_commm_config.json')['Hash']
         #return hash
+
+    '''
+    joins the room
+    '''
+    def join_room(self, hash):
+        return self.ipfs_client.get(hash)
         
 
 
 
-    
-
-cl_0 = Client('aa')
+room = 'QmV4h5WfvLssEyY8wqWhm5wjg7iZfn68hUuk4cZCpWiD1P'
+cl_0 = Client('badbadfeioa')
 cl_1 = Client()
 
 #TODO timeout variable so something like a config 
 #TODO checking if ledger file exists so if youre still connected
-
+#TODO how to update the roomconfigfiles - IPNS
