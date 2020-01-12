@@ -4,8 +4,8 @@ import io
 with ipfshttpclient.connect() as client:
     
     # stream
-    print(client.block.put(io.BytesIO(b'PROTO HELLO')))
-
+    print(client.block.put(io.BytesIO(b'PROTO HELLOOO')))
+    print()
 
     file_upload = client.add('conv.txt')
     print(file_upload)

@@ -28,12 +28,20 @@ class Client:
 
     def _close(self):
         self.ipfs_client.close()
+    
+    def _clean(self, hash):
+        self.ipfs_client.pin.rm(hash)
+        self.ipfs_client.repo.gc()
 
     def get_id(self):
         return self.ipfs_client.id()['ID']
 
+    def get_hash(self):
+        return self.hash
+
     def send_mess(self, msg):
         # TODO update ledger here
+        with open('')
         return self.ipfs_client.add(msg)
 
     '''
@@ -41,14 +49,14 @@ class Client:
     '''
     def create_room(self): #TODO needs working add_json/get_json ipfs methods
         first_mess = self.send_mess('test.txt')
-        json.dumps({'version': '0.1', 'messes': (first_mess, )})        
+        json.dumps({'version': '0.1', 'messes': (first_mess, )})
         return self.ipfs_client.add('test_commm_config.json')['Hash']
 
     '''
     joins the room
     '''
     def join_room(self, hash):
-        return self.ipfs_client.get(hash)
+        self.ipfs_client.get(hash)
         
 
 
@@ -61,3 +69,5 @@ cl_1 = Client()
 #TODO checking if ledger file exists so if youre still connected
 #TODO how to update the roomconfigfiles - IPNS
 #TODO monitoring of members, CRITICAL log if message from outside, add tests
+#TODO client.object_put()
+
