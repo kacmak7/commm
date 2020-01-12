@@ -1,4 +1,5 @@
 import ipfshttpclient
+import json
 import logging
 
 logger = logging.getLogger(__name__)
@@ -31,12 +32,17 @@ class Client:
     def get_id(self):
         return self.ipfs_client.id()['ID']
 
+    def send_mess(self, msg):
+        # TODO update ledger here
+        return self.ipfs_client.add(msg)
+
     '''
     creates communication room
     '''
     def create_room(self): #TODO needs working add_json/get_json ipfs methods
+        first_mess = self.send_mess('test.txt')
+        json.dumps({'version': '0.1', 'messes': (first_mess, )})        
         return self.ipfs_client.add('test_commm_config.json')['Hash']
-        #return hash
 
     '''
     joins the room
@@ -54,3 +60,4 @@ cl_1 = Client()
 #TODO timeout variable so something like a config 
 #TODO checking if ledger file exists so if youre still connected
 #TODO how to update the roomconfigfiles - IPNS
+#TODO monitoring of members, CRITICAL log if message from outside, add tests
