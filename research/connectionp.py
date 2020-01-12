@@ -5,4 +5,5 @@ with ipfshttpclient.connect() as client:
     print(file_upload)
     with open('conv_hash.txt', 'w+') as text_file:
         n = text_file.write(file_upload['Hash'])
-
+    
+    if client.get('QmXJLAxQvBUVc2EnqJrYEnt3QbTAtLXXrTXiCkodjrVZca')
