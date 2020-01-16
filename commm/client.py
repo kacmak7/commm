@@ -39,6 +39,9 @@ class Client:
     def get_hash(self):
         return self.hash
 
+    '''
+    populates the message
+    '''
     def send_mess(self, msg):
         # TODO update ledger here
         with open('')
@@ -67,7 +70,6 @@ cl_1 = Client()
 
 #TODO timeout variable so something like a config 
 #TODO checking if ledger file exists so if youre still connected
-#TODO how to update the roomconfigfiles - IPNS
 #TODO monitoring of members, CRITICAL log if message from outside, add tests
 #TODO client.object_put()
-
+#TODO IPNS discussion - https://discuss.ipfs.io/t/mutability-using-ipns-but-multiple-contributors/555/8
