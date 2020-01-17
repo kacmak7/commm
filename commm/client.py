@@ -21,7 +21,7 @@ class Client:
                 logger.error("Could not join " + key)
 
     def __del__(self):
-        logger.warning("closing")
+        logger.warning("Closing Client")
         self._close()  # shut down ipfs client
 
     def _open(self):
@@ -35,7 +35,7 @@ class Client:
         self.ipfs_client.repo.gc()
 
     def get_ledger(self): # ledger hash is very dynamic
-        path = self.ipfs_client.name.resolve(self.key)["Path"]  # it downloads the file ?????
+        path = self.ipfs_client.name.resolve(self.key)["Path"]
         return path[6:]
 
     """
@@ -108,8 +108,6 @@ class Client:
     #    self.ipfs_client.get(key)
 
 
-cl_0 = Client()
-cl_0.send_mess('new message')
 
 # TODO timeout variable so something like a config
 # TODO checking if ledger file exists so if youre still connected
