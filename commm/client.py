@@ -40,7 +40,7 @@ class Client:
         ledger_hash = get_ledger()
         self.ipfs_client.key.rm('room_key')
         self.key = client.key.gen('room_key', 'rsa')['Id']
-        self.ipfs_client.name.publish('/ipfs/' + ledger_hash)
+        self.ipfs_client.name.publish('/ipfs/' + ledger_hash, key=self.key)
 
     def get_id(self):
         return self.ipfs_client.id()['ID']
@@ -56,7 +56,7 @@ class Client:
         ledger_hash = get_ledger()
         with open(ledger_hash) as ledger:
             ledger.writelines(mess_hash)
-        self.ipfs_client.name.publish('/ipfs/' + ledger_hash) # IPNS update
+        self.ipfs_client.name.publish('/ipfs/' + ledger_hash, key=self.key) # IPNS update
         return mess_hash
 
     '''
@@ -70,7 +70,7 @@ class Client:
         except:
             logger.info('CREATING ROOM FOR THE FIRST TIME')
         self.key = self.ipfs_client.key.gen('room_key', 'rsa')['Id']
-        self.ipfs_client.name.publish('/ipfs/' + ledger_hash)
+        self.ipfs_client.name.publish('/ipfs/' + ledger_hash, key=self.key)
         
 
     '''
