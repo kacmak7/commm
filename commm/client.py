@@ -33,9 +33,13 @@ class Client:
         self.ipfs_client.pin.rm(key)
         self.ipfs_client.repo.gc()
 
-    def get_ledger(self):
+    def get_ledger(self): # ledger hash is very dynamic
         path = client.name.resolve(self.key)["Path"]  # it downloads the file
         return path[6:]
+
+    """
+    creates new rsa key and replaces with it the old one, practically resets the room and kicks everyone out, so you're loosing connection with your old room
+    """
 
     def update_room_key(self):  # means: reset the room / kick everyone
         ledger_hash = get_ledger()
@@ -54,13 +58,26 @@ class Client:
     """
 
     def send_mess(self, msg):
-        mess_hash = self.ipfs_client.add(msg)["Hash"]
-        ledger_hash = get_ledger()
-        with open(ledger_hash) as ledger:
-            ledger.writelines(mess_hash)
-        self.ipfs_client.name.publish(
-            "/ipfs/" + ledger_hash, key=self.key
-        )  # IPNS update
+        mess_hash = ""
+        
+        # upload mess to IPFS
+        try:
+            mess_hash = self.ipfs_client.add_str(json_dumps({"sender": self.get_id, "body": str(msg)})) # TODO needs template
+        except:
+            logger.error('Could not upload your mess to IPFS')
+        
+        # update ledger
+        try:
+            ledger_hash = get_ledger()
+            with open(ledger_hash) as ledger:
+                ledger.writelines(mess_hash)
+            self.ipfs_client.name.publish(
+                "/ipfs/" + ledger_hash, key=self.key
+            )  # IPNS update
+        except:
+            # TODO delete here uploaded mess
+            logger.error('Could not update the ledger')
+        
         return mess_hash
 
     """
@@ -68,19 +85,20 @@ class Client:
     """
 
     def create_room(self):
-        first_mess = self.ipfs_client.add_str(
-            json.dumps({"sender": "system", "body": "Hello, it's your new room"})
-        )
+        #first_mess = self.ipfs_client.add_str(
+        #    json.dumps({"sender": "system", "body": "Hello, it's your new room"})
+        #)
         ledger_hash = self.ipfs_client.add_str(
-            json.dumps({"version": "0.1", "messes": (first_mess,)})
-        )  # TODO
+            json.dumps({"version": "0.1", "messes": ()})
+        )  # TODO needs templates or smth
         try:
             self.ipfs_client.key.rm("room_key")
         except:
-            logger.info("CREATING ROOM FOR THE FIRST TIME")
+            logger.warning("CREATING ROOM FOR THE FIRST TIME")
         self.key = self.ipfs_client.key.gen("room_key", "rsa")["Id"]
         self.ipfs_client.name.publish("/ipfs/" + ledger_hash, key=self.key)
-
+        
+    
     """
     joins the room
     """
