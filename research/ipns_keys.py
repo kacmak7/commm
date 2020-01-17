@@ -6,8 +6,9 @@ with ipfshttpclient.connect() as client:
     hash = client.add('conv.txt')['Hash']
     client.key.rm('example_key')
     key = client.key.gen('example_key', 'rsa')['Id']
-    print(client.key.list())
+    print('key list', client.key.list())
     published = client.name.publish('/ipfs/' + hash, key=key)
 
     # find
-    client.name.resolve(key)
+    print(client.name.resolve(key))
+    print('file hash', hash)

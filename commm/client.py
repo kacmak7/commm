@@ -5,19 +5,18 @@ import logging
 logger = logging.getLogger(__name__)
 
 class Client:
-    def __init__(self, hash=None):
+    def __init__(self, key=None):
         self._open() # initialize ipfs client
         
-        if hash is None:
-            self.hash = self.create_room()
-            logger.warning('Created ' + self.hash)
+        if key is None:
+            self.create_room()
+            logger.warning('Created ' + self.key)
         else:
             try:
-                self.join_room(hash)
-                self.hash = hash
-                logger.warning('Joined ' + self.hash)
+                self.key = key
+                logger.warning('Joined ' + self.key)
             except:
-                logger.error('Could not join ' + hash)
+                logger.error('Could not join ' + key)
 
     def __del__(self):
         logger.warning('closing')
@@ -29,37 +28,56 @@ class Client:
     def _close(self):
         self.ipfs_client.close()
     
-    def _clean(self, hash):
-        self.ipfs_client.pin.rm(hash)
+    def _clean(self, key):
+        self.ipfs_client.pin.rm(key)
         self.ipfs_client.repo.gc()
+
+    def get_ledger(self):
+        path = client.name.resolve(self.key)['Path'] # it downloads the file
+        return path[6:] 
+
+    def update_room_key(self): # means: reset the room / kick everyone 
+        ledger_hash = get_ledger()
+        self.ipfs_client.key.rm('room_key')
+        self.key = client.key.gen('room_key', 'rsa')['Id']
+        self.ipfs_client.name.publish('/ipfs/' + ledger_hash)
 
     def get_id(self):
         return self.ipfs_client.id()['ID']
 
-    def get_hash(self):
-        return self.hash
+    def get_room_key(self):
+        return self.key
 
     '''
     populates the message
     '''
     def send_mess(self, msg):
-        # TODO update ledger here
-        with open('')
-        return self.ipfs_client.add(msg)
+        mess_hash = self.ipfs_client.add(msg)['Hash']
+        ledger_hash = get_ledger()
+        with open(ledger_hash) as ledger:
+            ledger.writelines(mess_hash)
+        self.ipfs_client.name.publish('/ipfs/' + ledger_hash) # IPNS update
+        return mess_hash
 
     '''
     creates communication room
     '''
-    def create_room(self): #TODO needs working add_json/get_json ipfs methods
-        first_mess = self.send_mess('test.txt')
-        json.dumps({'version': '0.1', 'messes': (first_mess, )})
-        return self.ipfs_client.add('test_commm_config.json')['Hash']
+    def create_room(self):
+        first_mess = self.ipfs_client.add_str(json.dumps({'sender': 'system', 'body': 'Hello, it\'s your new room'}))
+        ledger_hash = self.ipfs_client.add_str(json.dumps({'version': '0.1', 'messes': (first_mess, )})) # TODO
+        try:
+            self.ipfs_client.key.rm('room_key')
+        except:
+            logger.info('CREATING ROOM FOR THE FIRST TIME')
+        self.key = self.ipfs_client.key.gen('room_key', 'rsa')['Id']
+        self.ipfs_client.name.publish('/ipfs/' + ledger_hash)
+        
 
     '''
     joins the room
     '''
-    def join_room(self, hash):
-        self.ipfs_client.get(hash)
+    #def join_room(self, key):
+    #    self.ipfs_client.get(key)
         
 
 
