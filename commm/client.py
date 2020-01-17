@@ -1,6 +1,7 @@
 import ipfshttpclient
 import json
 import logging
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class Client:
         self.ipfs_client.repo.gc()
 
     def get_ledger(self): # ledger hash is very dynamic
-        path = client.name.resolve(self.key)["Path"]  # it downloads the file
+        path = self.ipfs_client.name.resolve(self.key)["Path"]  # it downloads the file ?????
         return path[6:]
 
     """
@@ -62,20 +63,21 @@ class Client:
         
         # upload mess to IPFS
         try:
-            mess_hash = self.ipfs_client.add_str(json_dumps({"sender": self.get_id, "body": str(msg)})) # TODO needs template
+            mess_hash = self.ipfs_client.add_str(json.dumps({"sender": self.get_id(), "body": str(msg)})) # TODO needs template
         except:
             logger.error('Could not upload your mess to IPFS')
         
         # update ledger
         try:
-            ledger_hash = get_ledger()
-            with open(ledger_hash) as ledger:
+            ledger_hash = self.get_ledger()
+            self.ipfs_client.get(ledger_hash)
+            with open(ledger_hash, 'w') as ledger:
                 ledger.writelines(mess_hash)
             self.ipfs_client.name.publish(
                 "/ipfs/" + ledger_hash, key=self.key
             )  # IPNS update
         except:
-            # TODO delete here uploaded mess
+            # TODO HERE! delete uploaded mess
             logger.error('Could not update the ledger')
         
         return mess_hash
@@ -106,9 +108,8 @@ class Client:
     #    self.ipfs_client.get(key)
 
 
-room = "QmV4h5WfvLssEyY8wqWhm5wjg7iZfn68hUuk4cZCpWiD1P"
-cl_0 = Client("badbadfeioa")
-cl_1 = Client()
+cl_0 = Client()
+cl_0.send_mess('new message')
 
 # TODO timeout variable so something like a config
 # TODO checking if ledger file exists so if youre still connected
