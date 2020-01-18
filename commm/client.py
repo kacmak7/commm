@@ -16,13 +16,15 @@ class Client:
         else:
             try:
                 self.key = key
+                resolve_ledger_hash()
                 logger.warning("Joined " + self.key)
             except:
                 logger.error("Could not join " + key)
+                self.key = None
 
     def __del__(self):
         logger.warning("Closing Client")
-        self._close()  # shut down ipfs client
+        self._close() # shut down ipfs client
 
     def _open(self):
         self.ipfs_client = ipfshttpclient.connect(session=True)
@@ -34,12 +36,17 @@ class Client:
         self.ipfs_client.pin.rm(key)
         self.ipfs_client.repo.gc()
 
-
     """
         returns up-to-date hash of the ledger
     """
-    def get_ledger_hash(self): # ledger hash is very dynamic
+    def resolve_ledger_hash(self): # ledger hash is very dynamic
         return self.ipfs_client.name.resolve(self.key)["Path"][6:]
+    
+    """
+    TEMPORARY METHOD
+    """
+    def get(self, hash):
+        return self.ipfs_client.get(hash)
 
     """
     creates new rsa key and replaces with it the old one, practically resets the room and kicks everyone out, so you're loosing connection with your old room
