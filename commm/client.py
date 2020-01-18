@@ -34,16 +34,19 @@ class Client:
         self.ipfs_client.pin.rm(key)
         self.ipfs_client.repo.gc()
 
-    def get_ledger(self): # ledger hash is very dynamic
-        path = self.ipfs_client.name.resolve(self.key)["Path"]
-        return path[6:]
+
+    """
+        returns up-to-date hash of the ledger
+    """
+    def get_ledger_hash(self): # ledger hash is very dynamic
+        return self.ipfs_client.name.resolve(self.key)["Path"][6:]
 
     """
     creates new rsa key and replaces with it the old one, practically resets the room and kicks everyone out, so you're loosing connection with your old room
     """
 
     def update_room_key(self):  # means: reset the room / kick everyone
-        ledger_hash = get_ledger()
+        ledger_hash = get_ledger_hash()
         self.ipfs_client.key.rm("room_key")
         self.key = client.key.gen("room_key", "rsa")["Id"]
         self.ipfs_client.name.publish("/ipfs/" + ledger_hash, key=self.key)
@@ -69,7 +72,7 @@ class Client:
         
         # update ledger
         try:
-            ledger_hash = self.get_ledger()
+            ledger_hash = self.get_ledger_hash()
             self.ipfs_client.get(ledger_hash)
             with open(ledger_hash, 'w') as ledger:
                 ledger.writelines(mess_hash)
@@ -114,3 +117,4 @@ class Client:
 # TODO monitoring of members, CRITICAL log if message from outside, add tests
 # TODO client.object_put()
 # TODO IPNS discussion - https://discuss.ipfs.io/t/mutability-using-ipns-but-multiple-contributors/555/8
+# TODO keep in ledger up to 10 messes

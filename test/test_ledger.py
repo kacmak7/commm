@@ -8,6 +8,6 @@ ledger_hash = cl_0.get_ledger()
 with open(ledger_hash) as ledger:
     for line in ledger: 
         print(line)
+        cl_0.get(line)
         with open(line) as mess:
             print(mess)
-
