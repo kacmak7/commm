@@ -126,3 +126,5 @@ class Client:
 # TODO client.object_put()
 # TODO IPNS discussion - https://discuss.ipfs.io/t/mutability-using-ipns-but-multiple-contributors/555/8
 # TODO keep in ledger up to 10 messes
+# TODO store self.key in local file system
+# TODO enable multi-rooms
