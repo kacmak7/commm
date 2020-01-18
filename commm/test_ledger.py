@@ -1,6 +1,4 @@
 from client import *
-import ipfshttpclient as ipfs_client
-
 
 cl_0 = Client()
 cl_0.send_mess('new message')
@@ -14,3 +12,4 @@ with open(ledger_hash) as ledger:
         cl_0.get(line)
         with open(line) as mess:
             print(mess)
+

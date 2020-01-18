@@ -53,7 +53,7 @@ class Client:
     """
 
     def update_room_key(self):  # means: reset the room / kick everyone
-        ledger_hash = get_ledger_hash()
+        ledger_hash = resolve_ledger_hash()
         self.ipfs_client.key.rm("room_key")
         self.key = client.key.gen("room_key", "rsa")["Id"]
         self.ipfs_client.name.publish("/ipfs/" + ledger_hash, key=self.key)
@@ -79,16 +79,17 @@ class Client:
         
         # update ledger
         try:
-            ledger_hash = self.get_ledger_hash()
+            ledger_hash = self.resolve_ledger_hash()
             self.ipfs_client.get(ledger_hash)
             with open(ledger_hash, 'w') as ledger:
                 ledger.writelines(mess_hash)
             self.ipfs_client.name.publish(
                 "/ipfs/" + ledger_hash, key=self.key
             )  # IPNS update
-        except:
+        except BaseException as e:
             # TODO HERE! delete uploaded mess
             logger.error('Could not update the ledger')
+            logger.error(e)
         
         return mess_hash
 
