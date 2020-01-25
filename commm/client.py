@@ -107,7 +107,7 @@ class Client:
         try:
             self.ipfs_client.key.rm("room_key")
         except:
-            logger.warning("CREATING ROOM FOR THE FIRST TIME")
+            logger.warning("CREATING ROOM FOR THE FIRST TIME") # TODO not exactly
         self.key = self.ipfs_client.key.gen("room_key", "rsa")["Id"]
         self.ipfs_client.name.publish("/ipfs/" + ledger_hash, key=self.key)
         
