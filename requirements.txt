@@ -1,2 +1,2 @@
 ipfshttpclient==0.4.12
-flask==1.1.1
+flask==2.3.2
